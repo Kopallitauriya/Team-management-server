@@ -1,4 +1,3 @@
-const { Model } = require("mongoose");
 const mongoose = require("../config/mongodbConfig");
 
 const TeamSchema = new mongoose.Schema({
