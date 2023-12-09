@@ -1,26 +1,22 @@
 const express = require("express")
 const UserModel = require("../model/UserModel")
-const data = require("../data")
+const mockdata = require("../data")
 
 const router = express.Router();
 
 router.get('/domain', async (req, res) => {
-    const domainArray = []
-    data.map((itm) => {
-        if (!domainArray.includes(itm.domain)) {
-            domainArray.push(itm.domain)
-        }
-    })
+    const domainArray = await UserModel.distinct('domain', {});
     res.send(domainArray)
 })
 
-router.get('/filter', (req, res) => {
+router.get('/filter', async (req, res) => {
     let search = req?.query?.search;
     let domain = req?.query?.domain?.split(',') || []
     let availability = req?.query?.availability?.split(',') || []
     let gender = req?.query?.gender?.split(',') || []
+
+    const data = await UserModel.find({});
     let searchData = data;
-    console.log(search)
 
     if (search) {
         const regex = new RegExp(`^${search}`, 'i')
@@ -32,7 +28,9 @@ router.get('/filter', (req, res) => {
     if (gender.length == 1 && gender[0] == '') gender = [];
 
     let filteredData = searchData.filter((itm) => (gender.includes(itm.gender) || gender.length === 0))
-    filteredData= filteredData.filter((itm) =>  (availability.includes(`${itm.available}`) || availability.length === 0) )
+    console.log('filteredData', filteredData.length)
+    filteredData= filteredData.filter((itm) =>  (availability.includes(`${itm.availiable}`) || availability.length === 0) )
+    console.log('filteredData', filteredData.length)
     filteredData = filteredData.filter((itm) => (domain.includes(itm.domain) || domain.length === 0))
 
     // pagination
@@ -89,6 +87,22 @@ router.put('/:id', async (req,res) => {
 
 router.delete('/:id', async (req,res) => {
     res.send(await UserModel.delete({_id: id}))
+})
+
+router.get('/save/mockusers', async (req,res) => {
+    mockdata.forEach(async (itm) => {
+        const newUser = new UserModel({
+            first_name: itm.first_name,
+            last_name: itm.last_name,
+            email: itm.email,
+            gender: itm.gender,
+            avatar: itm.avatar,
+            domain: itm.domain,
+            availiable: itm.available
+        })
+        console.log(await newUser.save());
+    })
+    res.send("Saved All Users!");
 })
 
 

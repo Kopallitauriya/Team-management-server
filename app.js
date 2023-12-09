@@ -14,8 +14,8 @@ app.get('/', (req, res) => {
     res.send("Health Check OK!");
 })
 
-// app.listen(8000, (req, res) => {
-//     console.log("Server is Listening...")
-// })
+app.listen(8000, (req, res) => {
+    console.log("Server is Listening...")
+})
 
-module.exports = app;
+// module.exports = app;

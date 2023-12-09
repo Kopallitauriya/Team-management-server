@@ -1,17 +1,15 @@
 const express = require("express")
-const TeamModel = require("../model/TeamModel")
-const data = require('../data')
+const TeamModel = require("../model/TeamModel");
+const UserModel = require("../model/UserModel");
 
 const router = express.Router();
 
 router.post("/", async (req, res) => {
     const body = req.body
-    console.log(body)
     let teamID = body.teamID.filter((itm) => itm != '' || itm != null || itm != undefined)
     console.log(teamID)
 
-    const users = data.filter((itm) => teamID.includes(`${itm.id}`));
-   
+    const users = await UserModel.find({_id : {$in: teamID}});
 
     const check = { domain: [] };
     for (let i = 0; i < users.length; i++) {
@@ -19,7 +17,7 @@ router.post("/", async (req, res) => {
             res.send({ success: false, error: true, message: "People in same domain cannot be in same team " })
             return
         }
-        if (!users[i].available) {
+        if (!users[i].availiable) {
             res.send({ success: false, error: true, message: "Those who are available can only join team" })
             return
         }
